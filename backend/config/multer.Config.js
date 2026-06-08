@@ -1,6 +1,7 @@
 const multer = require("multer");
 const sharp = require("sharp");
 const path = require("path");
+const fs = require("fs");
 const AppError = require("../utils/appError");
 
 const storage = multer.memoryStorage();
@@ -26,7 +27,12 @@ const resizeImage = async (req, res, next) => {
   const userId = req.user ? req.user.id : "admin";
   const uniqueName = `service-${userId}-${Date.now()}.${ext}`;
 
-  const uploadPath = "/tmp";
+  const uploadPath = path.join(__dirname, "../uploads");
+
+  if (!fs.existsSync(uploadPath)) {
+    fs.mkdirSync(uploadPath, { recursive: true });
+  }
+
   const filePath = path.join(uploadPath, uniqueName);
 
   try {
