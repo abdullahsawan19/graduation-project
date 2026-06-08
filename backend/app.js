@@ -10,6 +10,8 @@ const hpp = require("hpp");
 const cors = require("cors");
 const compression = require("compression");
 
+const connectDB = require("./config/db.config");
+
 const globalErrorHandler = require("./controllers/error.Controller");
 const notFound = require("./middlewares/notFound.middleware");
 const chatRouter = require("./routes/chat.Routes");
@@ -71,6 +73,7 @@ app.use(
     replaceWith: "_",
   }),
 );
+
 app.use((req, res, next) => {
   if (req.body) {
     for (let key in req.body) {
@@ -84,6 +87,7 @@ app.use((req, res, next) => {
   }
   next();
 });
+
 app.use(
   hpp({
     whitelist: [
@@ -97,6 +101,15 @@ app.use(
 );
 
 app.use(compression());
+
+app.use(async (req, res, next) => {
+  try {
+    await connectDB();
+    next();
+  } catch (error) {
+    next(error);
+  }
+});
 
 // Routes
 app.use("/api/users", require("./routes/user.Routes"));
