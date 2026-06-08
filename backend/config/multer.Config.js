@@ -1,7 +1,6 @@
 const multer = require("multer");
 const sharp = require("sharp");
 const path = require("path");
-const fs = require("fs");
 const AppError = require("../utils/appError");
 
 const storage = multer.memoryStorage();
@@ -27,11 +26,7 @@ const resizeImage = async (req, res, next) => {
   const userId = req.user ? req.user.id : "admin";
   const uniqueName = `service-${userId}-${Date.now()}.${ext}`;
 
-  const uploadPath = path.join(__dirname, "../uploads");
-  if (!fs.existsSync(uploadPath)) {
-    fs.mkdirSync(uploadPath, { recursive: true });
-  }
-
+  const uploadPath = "/tmp";
   const filePath = path.join(uploadPath, uniqueName);
 
   try {
@@ -47,6 +42,7 @@ const resizeImage = async (req, res, next) => {
 
     next();
   } catch (error) {
+    console.error("🔥 Sharp Error Details:", error);
     return next(new AppError("Error processing image", 500));
   }
 };

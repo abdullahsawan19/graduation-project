@@ -10,16 +10,19 @@ const connectDB = async () => {
   if (cached.conn) return cached.conn;
 
   if (!cached.promise) {
-    cached.promise = mongoose.connect(process.env.MONGO_URL, {
-      bufferCommands: false,
-      serverSelectionTimeoutMS: 5000,
-    });
+    cached.promise = mongoose
+      .connect(process.env.MONGO_URL, {
+        bufferCommands: false,
+        serverSelectionTimeoutMS: 5000,
+      })
+      .then((mongoose) => {
+        console.log("MongoDB Connected Successfully");
+        return mongoose;
+      });
   }
 
   cached.conn = await cached.promise;
   return cached.conn;
 };
-
-console.log("MONGO_URL:", process.env.MONGO_URL);
 
 module.exports = connectDB;
